@@ -1,3 +1,1 @@
-module CryptoLabsGo
-
-go 1.15
+module "CryptoLabsGo"
