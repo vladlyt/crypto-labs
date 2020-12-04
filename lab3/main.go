@@ -2,13 +2,21 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/google/uuid"
 	"log"
 	"net/http"
 )
 
 func main() {
-	accID()
-	//MakeRequest("http://95.217.177.249/casino/createacc?id=${playerid}")
+
+	ui, _ := uuid.NewUUID()
+	fmt.Println(ui.String())
+	MakeRequest("http://95.217.177.249/casino/createacc?id=7bd9912c-367e-11eb-a5f7-acde48001122")
+	//for m in range(min_m, max_m)
+
+	// playLcg?id=312312313&bet=2&number=2414241241
+	///play{Mode}?id={playerID}&bet={amountOfMoney}&number={theNumberYouBetOn}
 }
 
 func MakeRequest(url string) {

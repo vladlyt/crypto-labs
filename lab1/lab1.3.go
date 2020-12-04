@@ -245,6 +245,6 @@ func (t *TrigramGenetic) SubstitutionWithGeneticAlgorithm() string {
 		population = t.GetBestFromPopulation(children, len(children))
 		best = population[0]
 	}
+	fmt.Println(population)
 	return string(substitutionWithoutDest(t.secret, []byte(t.GetBestFromPopulation(population, 1)[0].key)))
-
 }

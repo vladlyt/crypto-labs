@@ -11,6 +11,7 @@ import (
 	"io"
 	"math/rand"
 	"os"
+	"strings"
 	"sync"
 	"time"
 )
@@ -85,7 +86,7 @@ func EncryptBcrypt(password string) string {
 	return string(hashedPassword)
 }
 
-func main() {
+func Part1() {
 	generators := []PasswordGenerator{
 		Common100PasswordGenerator{},
 		Common1000000PasswordGenerator{},
@@ -114,29 +115,27 @@ func main() {
 		},
 	}
 
-	//// pimpalas
-	//hash := "d1025ab01b085246e8f6f3294875c175:3fd7820dcbbca2d0cd5a0f476180c358bd5ef49d"
-	//
-	//hparts := strings.Split(hash, ":")
-	//
-	//salt := hparts[0]
-	//
-	//
-	//
-	//hasher := sha1.New()
-	//hasher.Write([]byte("pimpalas" + salt))
-	//
-	//fmt.Println(hex.EncodeToString(hasher.Sum(nil)))
-
 	wg := sync.WaitGroup{}
 	for _, hash := range hashes {
 		wg.Add(1)
 		go func(hash Hash) {
-			fmt.Println("LOL")
 			GeneratePasswords(hash.outputFilepath, PASSWORD_GENERATION_COUNT, generators, hash.function)
 			wg.Done()
-			fmt.Println("DONE")
 		}(hash)
 	}
 	wg.Wait()
+}
+
+func Part2() {
+	hash := "d1025ab01b085246e8f6f3294875c175:3fd7820dcbbca2d0cd5a0f476180c358bd5ef49d"
+	hparts := strings.Split(hash, ":")
+	salt := hparts[0]
+	hasher := sha1.New()
+	hasher.Write([]byte("pimpalas" + salt))
+	fmt.Println(hex.EncodeToString(hasher.Sum(nil)))
+}
+
+func main() {
+	Part1()
+	//Part2()
 }

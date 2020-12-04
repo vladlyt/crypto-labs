@@ -41,6 +41,7 @@ func lab2() {
 		fmt.Println(i, indexOfCoincidence(stringRepeatBy(decodedSecret2, i)))
 	}
 
+	// key length is 3
 	np := nextProduct([]byte(ALPHABET), 3)
 	dest := make([]byte, len(decodedSecret2))
 	trigram := NewTrigramGenetic("3grams.txt", "out.txt", decodedSecret2)
@@ -101,8 +102,8 @@ func lab3() {
 
 func main() {
 
-	lab1()
-	lab2()
-	//lab3()
+	//lab1()
+	//lab2()
+	lab3()
 
 }
