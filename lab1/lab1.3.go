@@ -100,7 +100,7 @@ func (t *TrigramGenetic) GetInitialPopulation(populationCount int) []Population 
 			randomAlphabet[i], randomAlphabet[j] = randomAlphabet[j], randomAlphabet[i]
 		})
 		out[i] = Population{
-			key: string(randomAlphabet),
+			key:        string(randomAlphabet),
 			estimation: -1,
 		}
 	}
@@ -119,17 +119,30 @@ func (t *TrigramGenetic) GetBestFromPopulation(population []Population, aliveCou
 	sort.SliceStable(allPopulation, func(i, j int) bool {
 		return allPopulation[i].estimation < allPopulation[j].estimation
 	})
-	return allPopulation[:aliveCount]
+	seen := make(map[string]struct{}, 0)
+	out := make([]Population, 0)
+	for _, p := range allPopulation {
+		if len(out) == aliveCount {
+			break
+		}
+		if _, ok := seen[p.key]; !ok {
+			out = append(out, p)
+			seen[p.key] = struct{}{}
+		}
+	}
+
+	return out
 }
 
-func (t *TrigramGenetic) ChangeDecision(child []byte, firstParent []byte, secondParent []byte, i int) {
+func (t *TrigramGenetic) ChangeDecision(child []byte, firstParent []byte, secondParent []byte, i int) []byte {
 	if !bytes.Contains(child, firstParent[i:i+1]) {
-		return
+		return child
 	}
 	newIdx := bytes.Index(child, firstParent[i:i+1])
 	child[newIdx] = 0
-	t.ChangeDecision(child, firstParent, secondParent, newIdx)
+	child = t.ChangeDecision(child, firstParent, secondParent, newIdx)
 	child[newIdx] = firstParent[newIdx]
+	return child
 }
 
 func (t *TrigramGenetic) Cross(first Population, second Population) Population {
@@ -140,9 +153,9 @@ func (t *TrigramGenetic) Cross(first Population, second Population) Population {
 
 	for i := 0; i < len(firstParent); i++ {
 
-		// we need to change decision if child has already 2 of parents values
+		//we need to change decision if child has already 2 of parents values
 		if bytes.Contains(child, firstParent[i:i+1]) && bytes.Contains(child, secondParent[i:i+1]) {
-			t.ChangeDecision(child, firstParent, secondParent, i)
+			child = t.ChangeDecision(child, firstParent, secondParent, i)
 		}
 
 		if bytes.Contains(child, firstParent[i:i+1]) {
@@ -173,21 +186,11 @@ func (t *TrigramGenetic) Crossing(population []Population) []Population {
 		for idx1 == idx2 {
 			idx2 = rand.Int63n(int64(len(population)))
 		}
-		children = append(children, t.Cross(population[idx1], population[idx2]))
+		child := t.Cross(population[idx1], population[idx2])
+		children = append(children, child)
 	}
 
-	newPopulation := make([]Population, len(population)*3-1)
-	for i := 0; i < len(population); i++ {
-		newPopulation[i] = Population{
-			key:        population[i].key,
-			estimation: -1,
-		}
-	}
-	for i := 0; i < len(children); i++ {
-		newPopulation[len(population)+i] = children[i]
-	}
-
-	return newPopulation
+	return append(children, population...)
 }
 
 func (t *TrigramGenetic) Mutate(population Population) Population {
@@ -204,32 +207,44 @@ func (t *TrigramGenetic) Mutate(population Population) Population {
 
 func (t *TrigramGenetic) MutatePopulation(population []Population) {
 	for i := 0; i < len(population); i++ {
-		if rand.Int63n(100) <= 10 {
+		if rand.Int63n(100) <= 20 {
 			population[i] = t.Mutate(population[i])
 		}
 	}
 }
 
+func UniqLen(p []Population) int {
+	res := make(map[string]struct{}, 0)
+	for _, pp := range p {
+		res[pp.key] = struct{}{}
+	}
+	return len(res)
+}
+
 func (t *TrigramGenetic) SubstitutionWithGeneticAlgorithm() string {
-	generation := 0
-	population := t.GetInitialPopulation(1000)
+	population := t.GetInitialPopulation(3000)
 	best := t.GetBestFromPopulation(population, 1)[0]
-	for t.TrigramEstimation(best.key) >= 0.12 {
-		if generation%1000 == 0 {
+	for generation := 0; t.TrigramEstimation(best.key) >= 0.021; generation++ {
+		if generation%100 == 0 {
 			fmt.Println(
-				t.TrigramEstimation(best.key),
-				best.key,
-				string(substitutionWithoutDest(t.secret, []byte(best.key))),
+				"Generation:", generation,
+			)
+			fmt.Println(
+				"Estimation:", t.TrigramEstimation(best.key),
+			)
+			fmt.Println(
+				"Key:", best.key,
+			)
+			fmt.Println(
+				"Result:", string(substitutionWithoutDest(t.secret, []byte(best.key))),
 			)
 		}
-		bestFromPopulation := t.GetBestFromPopulation(population, 500)
+		bestFromPopulation := t.GetBestFromPopulation(population, 1000)
 		children := t.Crossing(bestFromPopulation)
 		t.MutatePopulation(children)
-		population = children
-		best = t.GetBestFromPopulation(population, 1)[0]
-		generation++
+		population = t.GetBestFromPopulation(children, len(children))
+		best = population[0]
 	}
-
 	return string(substitutionWithoutDest(t.secret, []byte(t.GetBestFromPopulation(population, 1)[0].key)))
 
 }
