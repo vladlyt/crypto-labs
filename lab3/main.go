@@ -1,28 +1,36 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"github.com/google/uuid"
 	"log"
+	"math/rand"
 	"net/http"
+	"time"
+
+	"github.com/google/uuid"
 )
 
-func main() {
+const (
+	LINK = "http://95.217.177.249/casino"
+)
 
-	ui, _ := uuid.NewUUID()
-	fmt.Println(ui.String())
-	MakeRequest("http://95.217.177.249/casino/createacc?id=7bd9912c-367e-11eb-a5f7-acde48001122")
-	//for m in range(min_m, max_m)
-
-	// playLcg?id=312312313&bet=2&number=2414241241
-	///play{Mode}?id={playerID}&bet={amountOfMoney}&number={theNumberYouBetOn}
+type Game struct {
+	id     string
+	amount int
 }
 
-func MakeRequest(url string) {
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
+func createGame() *Game {
+	ui, _ := uuid.NewUUID()
+	game := Game{
+		id:     ui.String(),
+		amount: 1000,
+	}
 
 	client := http.Client{}
-	request, err := http.NewRequest("GET", url, nil)
+	request, err := http.NewRequest("GET", "http://95.217.177.249/casino/createacc?id="+game.id, nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -33,6 +41,21 @@ func MakeRequest(url string) {
 	}
 
 	var result map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&result)
 	log.Println(result)
+
+	return &game
+}
+
+func (g *Game) makeABet(amount int, number int) int {
+
+}
+
+func main() {
+
+	game := createGame()
+
+	//for m in range(min_m, max_m)
+
+	// playLcg?id=312312313&bet=2&number=2414241241
+	///play{Mode}?id={playerID}&bet={amountOfMoney}&number={theNumberYouBetOn}
 }

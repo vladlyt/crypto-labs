@@ -56,3 +56,38 @@ and randomly applied one of the following rules:
 Got passwords from https://github.com/o-rumiantsev/Cryptography/tree/master/lab4/part-1
 
 Renamed them into `input-passwords-bcrypt.csv`, `input-passwords-md5.csv`, `input-passwords-sha1.csv`
+
+`hashcat -a 0 -m 0 input-passwords-md5.csv  top-1000000-passwords.txt -o output-passwords-md5.csv`
+
+Straight mode MD5 passwords takes 36 seconds to restore with known passwords
+Recovered: 86678/175911 (49.27%) Digests
+
+
+`hashcat -a 3 -m 0 input-passwords-md5.csv  -o output-passwords-md5-brute.csv`
+
+Brute-force takes 16 minutes to restore 28800 passwords from 190000 and it'll take more than 10 hours
+------
+
+`hashcat -a 0 -m 110 input-passwords-sha1-semicolumn.csv  top-1000000-passwords.txt -o output-passwords-sha1.csv`
+
+Straight mode SHA1 passwords takes 2 hours 10 minutes 55 seconds to restore with known passwords
+Recovered: 100615/190000 (52.95%)
+
+`hashcat -a 3 -m 110 input-passwords-sha1-semicolumn.csv -o output-passwords-sha1-brute.csv`
+
+Brute-force SHA1 takes 41 minutes to recover 7 passwords from 190000 (it considered only 2 and 3 digit passwords). Total estimation time was so big.
+
+------
+
+`hashcat -a 0 -m 3200 input-passwords-bcrypt.csv top-1000000-passwords.txt -o output-passwords-bcrypt.csv`
+
+BCRYPT will takes 8 years to decode 190000 hashes in straight mode.
+
+------
+
+Conclusion: The strongest hashing scheme turned out to be bcrypt. Estimation time takes more than 8 year even in dictionary mode.
+The weakest hashing scheme turned out to be MD5, less weak – SHA1.
+
+We used dictionary and brute-force attacks. Brute-force became more effective.
+
+
