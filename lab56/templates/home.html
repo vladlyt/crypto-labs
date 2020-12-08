@@ -5,6 +5,9 @@
 {% block content %}
     {% if user.is_authenticated %}
         Hi {{ user.username }}!
+        <p>Your phone is: {{ user.phone }}</p>
+        <p>Your address is: {{ user.address }}</p>
+        <p><a href="{% url 'update-user-data' user.id %}">Update your data</a></p>
         <p><a href="{% url 'logout' %}">Log Out</a></p>
     {% else %}
         <p>You are not logged in</p>

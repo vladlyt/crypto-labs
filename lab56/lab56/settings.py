@@ -21,7 +21,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'django_extensions',
+    'encrypted_fields',
 
     'accounts',
 ]
@@ -86,6 +88,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+AUTH_USER_MODEL = 'accounts.User'
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -104,3 +108,9 @@ AUTH_PASSWORD_VALIDATORS = [
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
 ]
+
+# To generate new token
+# import secrets
+# secrets.token_hex(32)
+
+FIELD_ENCRYPTION_KEYS = [key for key in open('.encryption_keys').readlines()]

@@ -1,14 +1,18 @@
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login, authenticate, get_user_model
 from django.shortcuts import render, redirect
-from django.views.generic import View
+from django.urls import reverse
+from django.views.generic import View, FormView, UpdateView
+
+from accounts.forms import SignUpForm, UpdateUserDataForm
+
+User = get_user_model()
 
 
 class RegistrationView(View):
     http_method_names = ('get', 'post')
 
     def post(self, request, *args, **kwargs):
-        form = UserCreationForm(request.POST)
+        form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
@@ -19,4 +23,13 @@ class RegistrationView(View):
         return render(request, 'registration/registration.html', {'form': form})
 
     def get(self, request, *args, **kwargs):
-        return render(request, 'registration/registration.html', {'form': UserCreationForm()})
+        return render(request, 'registration/registration.html', {'form': SignUpForm()})
+
+
+class UpdateUserDataView(UpdateView):
+    template_name = 'user_data.html'
+    form_class = UpdateUserDataForm
+    queryset = User.objects.all()
+
+    def get_success_url(self):
+        return reverse('home')
