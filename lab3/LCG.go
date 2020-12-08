@@ -2,6 +2,8 @@ package main
 
 const SUM_TO_STOLE = 1000000
 
+func  
+
 // def get_diff(i, nums, m):
 //     # diff[0] = x1 - x0 (mod m)
 //     diff = nums[i + 1] - nums[i]
@@ -52,13 +54,3 @@ const SUM_TO_STOLE = 1000000
 //         cur = math.fmod(int_overflow(a*prev + c), m)
 //         yield int(cur)
 //         prev = cur
-
-//func main() {
-//	out, err := exec.Command("uuidgen").Output()
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//	fmt.Printf("%s", out)
-//	MODULE := math.Pow(2, 32)
-//	fmt.Printf("%s", MODULE)
-//}

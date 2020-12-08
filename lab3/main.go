@@ -46,13 +46,28 @@ func createGame() *Game {
 	return &game
 }
 
-func (g *Game) makeABet(amount int, number int) int {
+func (g *Game) makeABet(amount int, number int, mode string) int {
+	client := http.Client{}
+	request, err := http.NewRequest("GET", "http://95.217.177.249/casino/play"+mode+"?id="+g.id+"&bet="+amount+"&number="+number, nil)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	resp, err := client.Do(request)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var result map[string]interface{}
+	log.Println(result)
 
 }
 
 func main() {
 
 	game := createGame()
+	makeBet := game.makeABet(1, 0, "Lcg")
 
 	//for m in range(min_m, max_m)
 
