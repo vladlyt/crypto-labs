@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -41,33 +42,25 @@ func createGame() *Game {
 	}
 
 	var result map[string]interface{}
-	log.Println(result)
+	log.Println(result, resp)
 
 	return &game
 }
 
 func (g *Game) makeABet(amount int, number int, mode string) int {
-	client := http.Client{}
-	request, err := http.NewRequest("GET", "http://95.217.177.249/casino/play"+mode+"?id="+g.id+"&bet="+amount+"&number="+number, nil)
-
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	resp, err := client.Do(request)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	var result map[string]interface{}
-	log.Println(result)
-
+	// client := http.Client{}
+	// request, err := http.NewRequest("GET", "http://95.217.177.249/casino/play"+mode+"?id="+g.id+"&bet="+amount+"&number="+number, nil)
+	return 0
 }
 
 func main() {
+	mt := initMT19937(0)
+	mt.Seed(1303091290)
 
-	game := createGame()
-	makeBet := game.makeABet(1, 0, "Lcg")
+	fmt.Println(mt.mtToFloat())
+
+	//mt.Seed()
+	//game := createGame()
 
 	//for m in range(min_m, max_m)
 
