@@ -2,68 +2,55 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"math/rand"
-	"net/http"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 const (
-	LINK = "http://95.217.177.249/casino"
+	CASINO_LINK = "http://95.217.177.249/casino"
+	LCG         = "Lcg"
+	MT          = "Mt"
+	M           = 2 << 31
+	a, c        = 1664525, 1013904223
 )
 
-type Game struct {
-	id     string
-	amount int
+func lcgNextValue(x int) int {
+	return (x*a + c) % M
 }
 
-func init() {
-	rand.Seed(time.Now().UnixNano())
+func lcgCrack() {
+	game := NewGame(LCG)
+	fmt.Printf("%#v\n", game)
+	x := game.MakeABet(1, 33)
+	fmt.Println(x)
+	for game.Money <= 1000000 || game.Money == 0 {
+		x = lcgNextValue(x)
+		game.MakeABet(900, x)
+	}
+	if game.Money != 0 {
+		fmt.Println("YEAH WIN")
+	} else {
+		fmt.Println("LOST")
+	}
 }
 
-func createGame() *Game {
-	ui, _ := uuid.NewUUID()
-	game := Game{
-		id:     ui.String(),
-		amount: 1000,
+func mtCrack() {
+	game := NewGame(MT)
+
+	seed := game.CreationTime().UTC().Sub(
+		time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC),
+	).Seconds()
+	fmt.Println("SEED:", seed)
+
+	mt := initMT19937()
+	mt.Seed(uint32(seed))
+
+	for game.Money <= 1000000 || game.Money == 0 {
+		expected := mt.Next()
+		game.MakeABet(900, int(expected))
 	}
-
-	client := http.Client{}
-	request, err := http.NewRequest("GET", "http://95.217.177.249/casino/createacc?id="+game.id, nil)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	resp, err := client.Do(request)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	var result map[string]interface{}
-	log.Println(result, resp)
-
-	return &game
-}
-
-func (g *Game) makeABet(amount int, number int, mode string) int {
-	// client := http.Client{}
-	// request, err := http.NewRequest("GET", "http://95.217.177.249/casino/play"+mode+"?id="+g.id+"&bet="+amount+"&number="+number, nil)
-	return 0
 }
 
 func main() {
-	mt := initMT19937(0)
-	mt.Seed(1303091290)
-
-	fmt.Println(mt.mtToFloat())
-
-	//mt.Seed()
-	//game := createGame()
-
-	//for m in range(min_m, max_m)
-
-	// playLcg?id=312312313&bet=2&number=2414241241
-	///play{Mode}?id={playerID}&bet={amountOfMoney}&number={theNumberYouBetOn}
+	lcgCrack()
+	//mtCrack()
 }

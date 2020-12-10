@@ -11,7 +11,7 @@ type MT19937 struct {
 	index int
 }
 
-func initMT19937(seed uint32) *MT19937 {
+func initMT19937() *MT19937 {
 	return &MT19937{
 		state: make([]uint32, 624),
 		index: 625,
@@ -28,8 +28,8 @@ func (mt *MT19937) Seed(seed uint32) {
 }
 
 func (mt *MT19937) Twist() {
-	var n int = 624
-	var m int = 397
+	n := 624
+	m := 397
 	if mt.index == 625 {
 		mt.Seed(5489)
 	}
