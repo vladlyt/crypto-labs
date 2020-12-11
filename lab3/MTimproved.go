@@ -22,9 +22,9 @@ func leftShift(input uint32, num uint32, bitmask uint32) uint32 {
 	return result
 }
 
-func initMTImproved() *MTimproved {
+func initMTImproved(inputs []uint32) *MTimproved {
 	return &MTimproved{
-		inputs: make([]uint32, 624),
+		inputs: inputs,
 	}
 }
 

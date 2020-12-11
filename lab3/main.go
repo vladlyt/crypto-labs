@@ -9,6 +9,7 @@ const (
 	CASINO_LINK = "http://95.217.177.249/casino"
 	LCG         = "Lcg"
 	MT          = "Mt"
+	IMPROVED_MT = "BetterMt"
 	M           = 2 << 31
 	a, c        = 1664525, 1013904223
 )
@@ -50,7 +51,26 @@ func mtCrack() {
 	}
 }
 
+func improvedMtCrack() {
+	game := NewGame(IMPROVED_MT)
+
+	inputs := make([]uint32, 624)
+	for i := 0; i < 624; i++ {
+		result := game.MakeABet(1, 33)
+		inputs[i] = uint32(result)
+	}
+
+	mt := initMTImproved(inputs).MakeRange()
+
+	for game.Money <= 1000000 || game.Money == 0 {
+		expected := mt.Next()
+		bet := game.Money - 1
+		game.MakeABet(int(bet), int(expected))
+	}
+}
+
 func main() {
-	lcgCrack()
+	//lcgCrack()
 	//mtCrack()
+	improvedMtCrack()
 }
